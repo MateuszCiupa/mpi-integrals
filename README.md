@@ -9,7 +9,7 @@ make clean [main|group|imain]
 mpirun -n 4 ./integrate 0 2 10000
 ```
 
-Run with default values (begin=0, end=2, points=10000, proc=4)
+Run with default values
 
 
 ```
