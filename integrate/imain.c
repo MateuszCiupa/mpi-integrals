@@ -27,19 +27,17 @@ int main(int argc, char *argv[]) {
     MPI_Status status;
 
     if (world_rank == 0) {
-        for (int i=1; i<world_size; i++) 
-            MPI_Irecv(&results[i-1], 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &request);
-        
         double result = integrate(fun, b, e, n);
 
-        for (int i=1; i<world_size; i++)
+        for (int i=1; i<world_size; i++) {
+            MPI_Irecv(&results[i-1], 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &request);
             MPI_Wait(&request, &status);
+        }    
 
-        for (int i=0; i<world_size; i++) result += results[i];
+        for (int i=0; i<world_size-1; i++) result += results[i];
         printf("Result is: %f\n", result);
     } else {
         results[world_rank-1] = integrate(fun, b, e, n);
-        printf("Proces %d result: %f\n", world_rank, results[world_rank-1]);
         MPI_Isend(&results[world_rank-1], 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
     }

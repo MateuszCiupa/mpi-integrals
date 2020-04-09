@@ -2,13 +2,14 @@ MPICC?=mpicc
 MPIRUN?=mpirun
 EXECS=integrate
 
-Begin?=0
-End?=2
-NumPoints?=10000
+begin?=0
+end?=2
+points?=10000
+proc?=4
 
 Defaults=integrate.o
-RunFlags=-n 4
-RunParams=$(Begin) $(End) $(NumPoints)
+
+RunParams=$(begin) $(end) $(points)
 
 all: main clean run
 
@@ -16,10 +17,9 @@ main group imain: $(Defaults)
 	$(MPICC) -o $(EXECS) $@.c $(Defaults)
 
 run:
-	$(MPIRUN) ${RunFlags} ./$(EXECS) $(RunParams)
+	$(MPIRUN) -n $(proc) ./$(EXECS) $(RunParams)
 
 clean:
-	rm -f $(EXECS)
 	rm -f *.o
 
 %.o: %.c %.h
