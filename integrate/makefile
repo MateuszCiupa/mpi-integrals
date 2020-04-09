@@ -2,20 +2,25 @@ MPICC?=mpicc
 MPIRUN?=mpirun
 EXECS=integrate
 
+Begin?=0
+End?=2
+NumPoints?=10000
+
 Defaults=integrate.o
 RunFlags=-n 4
-RunParams=0 2 1000000
+RunParams=$(Begin) $(End) $(NumPoints)
 
 all: main clean run
 
-main group non_block: ${Defaults}
-	${MPICC} -o ${EXECS} $@.c ${Defaults}
+main group non_block: $(Defaults)
+	$(MPICC) -o $(EXECS) $@.c $(Defaults)
 
 run:
-	${MPIRUN} ${RunFlags} ./${EXECS} ${RunParams}
+	$(MPIRUN) ${RunFlags} ./$(EXECS) $(RunParams)
 
 clean:
+	rm $(EXECS)
 	rm *.o
 
 %.o: %.c %.h
-	${MPICC} -c $< -o $@
+	$(MPICC) -c $< -o $@
