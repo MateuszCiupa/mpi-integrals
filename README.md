@@ -3,7 +3,7 @@ Parallel numerical integration with Message Passing Interface
 
 ## Getting started
 
-Build executables by using `integrate/makefile`.
+Build executables by using `integrate/makefile`
 ```
 make clean [main|group|imain]
 mpirun -n 4 ./integrate 0 2 10000
