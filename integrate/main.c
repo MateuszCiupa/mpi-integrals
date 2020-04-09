@@ -1,14 +1,7 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<mpi.h>
-#include<math.h>
-
-double fun(double x) {
-    //return pow(x, 3) + pow(x, 2) + x + 7;
-    return pow(x, 2);
-}
-
-double integrate(double (*func)(double), double begin, double end, int num_points);
+#include <stdio.h>
+#include <stdlib.h>
+#include <mpi.h>
+#include "integrate.h"
 
 int main(int argc, char *argv[]) {
     MPI_Init(&argc, &argv);
@@ -44,11 +37,4 @@ int main(int argc, char *argv[]) {
     }
 
     MPI_Finalize();
-}
-
-double integrate(double (*func)(double), double begin, double end, int num_points) {
-    double result = 0;
-    for (int i=1; i<=num_points; i++) 
-        result += func(begin+i*(end-begin)/num_points) * (end-begin)/num_points;
-    return result;
 }
