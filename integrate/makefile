@@ -12,15 +12,15 @@ RunParams=$(Begin) $(End) $(NumPoints)
 
 all: main clean run
 
-main group non_block: $(Defaults)
+main group imain: $(Defaults)
 	$(MPICC) -o $(EXECS) $@.c $(Defaults)
 
 run:
 	$(MPIRUN) ${RunFlags} ./$(EXECS) $(RunParams)
 
 clean:
-	rm $(EXECS)
-	rm *.o
+	rm -f $(EXECS)
+	rm -f *.o
 
 %.o: %.c %.h
 	$(MPICC) -c $< -o $@

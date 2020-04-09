@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <mpi.h>
+#include <stdlib.h>
 #include "integrate.h"
 
 int main(int argc, char *argv[]) {
@@ -23,16 +23,25 @@ int main(int argc, char *argv[]) {
     double b = (world_rank < modulo ? equal_share*world_rank : (equal_share+1)*modulo + (world_rank-modulo)*equal_share) * x;
     double e = b + x*n;
     
+    MPI_Request request;
+    MPI_Status status;
+
     if (world_rank == 0) {
-        double result = integrate(fun, b, e, n);
         for (int i=1; i<world_size; i++) 
-            MPI_Recv(&results[i-1], 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Irecv(&results[i-1], 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &request);
+        
+        double result = integrate(fun, b, e, n);
+
+        for (int i=1; i<world_size; i++)
+            MPI_Wait(&request, &status);
+
         for (int i=0; i<world_size; i++) result += results[i];
         printf("Result is: %f\n", result);
     } else {
         results[world_rank-1] = integrate(fun, b, e, n);
         printf("Proces %d result: %f\n", world_rank, results[world_rank-1]);
-        MPI_Send(&results[world_rank-1], 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+        MPI_Isend(&results[world_rank-1], 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &request);
+        MPI_Wait(&request, &status);
     }
 
     MPI_Finalize();
